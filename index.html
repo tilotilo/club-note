@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Club Note</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <h1>Club Note <img src="./images/ghoul_1.gif" alt="ghoulish gif" /></h1>
+
+    <section class="panel">
+      <div class="row">
+        <label>Root</label>
+        <select id="root">
+          <option>C</option><option>C#</option><option>D</option><option>D#</option>
+          <option>E</option><option>F</option><option>F#</option><option>G</option>
+          <option>G#</option><option>A</option><option>A#</option><option>B</option>
+        </select>
+
+        <label>Octave</label>
+        <select id="octave">
+          <option>2</option><option>3</option><option selected>4</option>
+          <option>5</option><option>6</option>
+        </select>
+
+        <label>Mode</label>
+        <select id="mode">
+          <option value="note">Single note</option>
+          <option value="maj">Major</option>
+          <option value="min">Minor</option>
+          <option value="maj7">Maj7</option>
+          <option value="min7">Min7</option>
+          <option value="dim">Diminished</option>
+        </select>
+
+        <label>Wave</label>
+        <select id="wave">
+          <option selected>sine</option>
+          <option>triangle</option>
+          <option>sawtooth</option>
+          <option>square</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Duration (s)</label>
+        <input id="dur" type="number" min="0.05" step="0.05" value="1.0" />
+        <label>Volume</label>
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="0.3" />
+      </div>
+
+      <details>
+        <summary>ADSR (advanced)</summary>
+        <div class="row">
+          <label>A</label><input id="a" type="number" min="0" step="0.01" value="0.01" />
+          <label>D</label><input id="d" type="number" min="0" step="0.01" value="0.15" />
+          <label>S</label><input id="s" type="number" min="0" max="1" step="0.01" value="0.7" />
+          <label>R</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
+        </div>
+      </details>
+
+      <div class="row buttons">
+        <button id="play">Play</button>
+        <button id="hold">Hold</button>
+        <button id="stop">Stop All</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p id="status">Audio: idle • MIDI: checking… • Hold: OFF</p>
+      <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
+      <p class="hint">Computer keys: A W S E D F T G Y H U J (chromatic from C).</p>
+    </section>
+    <div><h6>©2025 Club Note | Accessibility | Terms of Use | Privacy | Sitemap | Manage Cookies Settings</h6></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
