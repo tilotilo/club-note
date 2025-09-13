@@ -145,8 +145,7 @@ details summary {
 /* === ADSR row: keep each label right next to its input === */
 .row.adsr {
   display: flex;              /* override the default grid for this row only */
-  flex-wrap: wrap;
-  gap: 6px 12px;              /* tighter horizontal & vertical spacing */
+  flex-wrap: wrap;         /* tighter horizontal & vertical spacing */
   align-items: center;
   margin: 4px 0;              /* compact vertical space */
 }
@@ -155,17 +154,13 @@ details summary {
 .row.adsr > label,
 .row.adsr > input[type="number"] {
   grid-column: auto;
-}
-
-/* Label + box sit together neatly */
-.row.adsr > label {
-  text-align: right;
-  padding-right: 4px;         /* tiny space before the number box */
+  text-align: center;
+  padding-left: 1px;         /* tiny space before the number box */
+  padding-right: 1px;
   min-width: 1.5ch;           /* keeps single letters aligned */
 }
 
 /* Tight number boxes for ADSR */
 #a, #d, #s, #r {
-  width: 12ch;                 /* ~4 characters (e.g., 0.01) */
-  text-align: center;
+  width: 12ch;
 }
