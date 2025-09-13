@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
-  <!-- Favicon
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link rel="icon" type="image/png" href="images/favicon.png" fetchpriority="low"/>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" fetchpriority="low">
+  <link rel="alternate icon" href="images/favicon.png" sizes="any">
 <head>
   <meta charset="utf-8" />
-  <title>🎹 Club Note</title>
+  <title>Club Note</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -14,30 +14,21 @@
     <h3>Club Note <img src="./images/ghoul_1.gif" alt="ghoulish gif" /></h3>
 
     <section class="panel">
-
-      <div class="row buttons">
-        <button id="play">Play</button>
-        <button id="hold">Hold</button>
-        <button id="stop">Stop All</button>
-      </div>
-      <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
-      <p class="hint">Computer keys [A W S E D F T G Y H U J] (chromatic from C)</p>
-
       <div class="row">
-        <label>Root</label>
+        <label for="root">Root</label>
         <select id="root">
           <option>C</option><option>C#</option><option>D</option><option>D#</option>
           <option>E</option><option>F</option><option>F#</option><option>G</option>
           <option>G#</option><option>A</option><option>A#</option><option>B</option>
         </select>
 
-        <label>Octave</label>
+        <label for="octave">Octave</label>
         <select id="octave">
-          <option>2</option><option>3</option><option selected>4</option>
+          <option>2</option><option selected>3</option><option>4</option>
           <option>5</option><option>6</option>
         </select>
-        
-        <label>Mode</label>
+
+        <label for="mode">Mode</label>
         <select id="mode">
           <option value="note">Single note</option>
           <option value="maj">Major</option>
@@ -47,54 +38,77 @@
           <option value="dim">Diminished</option>
         </select>
 
-        <label>Wave</label>
+        <label for="wave">Wave</label>
         <select id="wave">
-          <option selected>sawtooth</option>
-          <option>triangle</option>
           <option>sine</option>
+          <option selected>triangle</option>
+          <option>sawtooth</option>
           <option>square</option>
         </select>
       </div>
 
       <div class="row">
-        <label>Duration</label>
+        <label for="dur">Duration (s)</label>
         <input id="dur" type="number" min="0.05" step="0.05" value="1.0" />
-        <label>Volume</label>
+        <label for="vol">Volume</label>
         <input id="vol" type="range" min="0" max="1" step="0.01" value="0.3" />
       </div>
 
       <details>
-        <summary>ADSR</summary>
+        <summary>ADSR (advanced)</summary>
         <div class="row adsr">
-          <label>Attack</label><input id="a" type="number" min="0" step="0.01" value="0.01" />
-          <label>Decay</label><input id="d" type="number" min="0" step="0.01" value="0.15" />
-          <label>Sustain</label><input id="s" type="number" min="0" max="1" step="0.01" value="0.7" />
-          <label>Release</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
+          <label for="a">A</label><input id="a" type="number" min="0" step="0.01" value="0.01" />
+          <label for="d">D</label><input id="d" type="number" min="0" step="0.01" value="0.15" />
+          <label for="s">S</label><input id="s" type="number" min="0" max="1" step="0.01" value="0.7" />
+          <label for="r">R</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
         </div>
       </details>
-      
-<!-- Metronome controls -->
-<hr />
-<div class="row">
-  <label for="bpm">Metronome</label>
-  <input id="bpm" type="range" min="30" max="240" step="1" value="120" />
-  <span id="bpmVal">120 BPM</span>
 
-  <label for="metroMode">Beats</label>
-  <select id="metroMode">
-    <option value="all" selected>Every beat</option>
-    <option value="backbeat">2 & 4 only</option>
-  </select>
+      <div class="row buttons">
+        <button id="play">Play</button>
+        <button id="hold">Hold</button>
+        <button id="stop">Stop All</button>
+      </div>
 
-  <button id="metroStart">Start Metronome</button>
-  <button id="metroStop">Stop Metronome</button>
-</div>
+      <!-- Metronome controls -->
+      <hr />
+      <div class="row">
+        <label for="bpm">Metronome</label>
+        <input id="bpm" type="range" min="30" max="240" step="1" value="120" />
+        <span id="bpmVal">120 BPM</span>
 
+        <label for="metroMode">Beats</label>
+        <select id="metroMode">
+          <option value="all" selected>Every beat</option>
+          <option value="backbeat">2 &amp; 4 only</option>
+        </select>
+
+        <label for="metroVol">Click Vol</label>
+        <input id="metroVol" type="range" min="0" max="120" step="1" value="85" />
+
+        <button id="metroStart">Start Metronome</button>
+        <button id="metroStop">Stop Metronome</button>
+      </div>
+
+      <!-- Circle of Fourths auto-advance -->
+      <div class="row">
+        <label for="cycle4ths">Cycle 4ths</label>
+        <input id="cycle4ths" type="checkbox" />
+
+        <label for="cycleBeats">Advance every</label>
+        <select id="cycleBeats">
+          <option value="8" selected>8 beats</option>
+          <option value="16">16 beats</option>
+        </select>
+      </div>
+
+      <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
+      <p class="hint">Computer keys: A W S E D F T G Y H U J (chromatic from C).</p>
     </section>
 
     <section class="panel">
       <p id="status">Audio: idle • MIDI: checking… • Hold: OFF</p>
-      <footer><h6>©2025 Club Note | Accessibility | Terms of Use | Privacy | Sitemap | Manage Cookies Settings</h6></footer>
+      <footer><h5>©2025 Club Note | Accessibility | Terms of Use | Privacy | Sitemap | Manage Cookies Settings</h5></footer>
     </section>
   </main>
 
