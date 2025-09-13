@@ -72,6 +72,23 @@
           <label>Release</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
         </div>
       </details>
+      
+<!-- Metronome controls -->
+<hr />
+<div class="row">
+  <label for="bpm">Metronome</label>
+  <input id="bpm" type="range" min="30" max="240" step="1" value="120" />
+  <span id="bpmVal">120 BPM</span>
+
+  <label for="metroMode">Beats</label>
+  <select id="metroMode">
+    <option value="all" selected>Every beat</option>
+    <option value="backbeat">2 & 4 only</option>
+  </select>
+
+  <button id="metroStart">Start Metronome</button>
+  <button id="metroStop">Stop Metronome</button>
+</div>
 
     </section>
 
@@ -84,6 +101,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
-
-
