@@ -10,11 +10,29 @@
   --ok-hi: #2e8a4b;
 }
 
-* { box-sizing: border-box; font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif; }
-html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
+* {
+  box-sizing: border-box;
+  font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+}
 
-.wrap { max-width: 920px; margin: 32px auto; padding: 0 16px; }
-h1 { font-weight: 800; letter-spacing: .3px; margin: 0 0 16px; }
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.wrap {
+  max-width: 920px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  font-weight: 800;
+  letter-spacing: .3px;
+  margin: 0 0 16px;
+}
 
 .panel {
   background: var(--panel);
@@ -31,11 +49,27 @@ h1 { font-weight: 800; letter-spacing: .3px; margin: 0 0 16px; }
   align-items: center;
   margin: 10px 0;
 }
-.row > label { grid-column: span 2; color: var(--muted); font-size: 0.95rem; }
-.row > select, .row > input[type="number"], .row > input[type="range"] { grid-column: span 2; }
-.row.buttons { display: flex; gap: 10px; }
 
-input, select, button {
+.row > label {
+  grid-column: span 2;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.row > select,
+.row > input[type="number"],
+.row > input[type="range"] {
+  grid-column: span 2;
+}
+
+.row.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+input,
+select,
+button {
   background: #0e1030;
   color: var(--text);
   border: 1px solid #2b2f57;
@@ -43,31 +77,54 @@ input, select, button {
   padding: 8px 10px;
 }
 
-input[type="range"] { padding: 0; }
+input[type="range"] {
+  padding: 0;
+}
 
 button {
   background: var(--btn);
   cursor: pointer;
   transition: background .2s ease, transform .02s ease;
 }
-button:hover { background: var(--btn-hi); }
-button:active { transform: scale(0.99); }
+
+button:hover {
+  background: var(--btn-hi);
+}
+
+button:active {
+  transform: scale(0.99);
+}
 
 #hold.active {
   background: var(--ok);
   border-color: #2a5b3a;
 }
-#hold.active:hover { background: var(--ok-hi); }
 
-details summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
-.hint { color: var(--muted); font-size: 0.92rem; margin: 6px 0 0; }
-#status { margin: 0; }
+#hold.active:hover {
+  background: var(--ok-hi);
+}
 
-/* === Better alignment for labels in .row === */
+details summary {
+  cursor: pointer;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 6px 0 0;
+}
+
+#status {
+  margin: 0;
+}
+
+/* === Better alignment for labels and controls === */
 .row > label {
-  justify-self: end;     /* push labels to the right edge of their grid cell */
-  text-align: right;     /* align label text to the right */
-  padding-right: 4px;    /* tiny breathing space between label and control */
+  justify-self: end;      /* push label text to right edge */
+  text-align: right;      /* right-align label text */
+  padding-right: 4px;     /* small gap between label and input */
 }
 
 .row > label { grid-column: span 1; }
@@ -75,4 +132,21 @@ details summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
 .row > input[type="number"],
 .row > input[type="range"] {
   grid-column: span 1;   /* adjust span if needed, e.g., span 3 for wider boxes */
+}
+
+/* === Width tuning for number inputs === */
+
+/* ADSR fields (attack, decay, sustain, release) */
+#a,
+#d,
+#s,
+#r {
+  width: 10ch;          /* ~4 characters: e.g., 0.01 */
+  text-align: center;
+}
+
+/* Duration box */
+#dur {
+  width: 14ch;          /* allow a few extra digits, e.g., 10.00 */
+  text-align: center;
 }
