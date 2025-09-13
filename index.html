@@ -16,6 +16,15 @@
     <h3>Club Note <img src="./images/ghoul_1.gif" alt="ghoulish gif" /></h3>
 
     <section class="panel">
+
+      <div class="row buttons">
+        <button id="play">Play</button>
+        <button id="hold">Hold</button>
+        <button id="stop">Stop All</button>
+      </div>
+      <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
+      <p class="hint">Computer keys: A W S E D F T G Y H U J (chromatic from C).</p>
+
       <div class="row">
         <label>Root</label>
         <select id="root">
@@ -29,7 +38,7 @@
           <option>2</option><option>3</option><option selected>4</option>
           <option>5</option><option>6</option>
         </select>
-
+        
         <label>Mode</label>
         <select id="mode">
           <option value="note">Single note</option>
@@ -58,21 +67,14 @@
 
       <details>
         <summary>ADSR (advanced)</summary>
-        <div class="row">
-          <label>A</label><input id="a" type="number" min="0" step="0.01" value="0.01" />
-          <label>D</label><input id="d" type="number" min="0" step="0.01" value="0.15" />
-          <label>S</label><input id="s" type="number" min="0" max="1" step="0.01" value="0.7" />
-          <label>R</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
+        <div class="row adsr">
+          <label>Attack</label><input id="a" type="number" min="0" step="0.01" value="0.01" />
+          <label>Decay</label><input id="d" type="number" min="0" step="0.01" value="0.15" />
+          <label>Sustain</label><input id="s" type="number" min="0" max="1" step="0.01" value="0.7" />
+          <label>Release</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
         </div>
       </details>
 
-      <div class="row buttons">
-        <button id="play">Play</button>
-        <button id="hold">Hold</button>
-        <button id="stop">Stop All</button>
-      </div>
-      <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
-      <p class="hint">Computer keys: A W S E D F T G Y H U J (chromatic from C).</p>
     </section>
 
     <section class="panel">
@@ -84,8 +86,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
