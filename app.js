@@ -1,6 +1,4 @@
-/* Mini Web Synth — stable Hold/Release.
-   Works in Chrome/Edge/Firefox. WebMIDI optional (Chrome/Edge).
-*/
+/* Club Note — Mini Web Synth with louder metronome (dedicated gain) */
 
 const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const KEYMAP = { "a":0,"w":1,"s":2,"e":3,"d":4,"f":5,"t":6,"g":7,"y":8,"h":9,"u":10,"j":11 };
@@ -9,30 +7,26 @@ let audioCtx = null;
 let master = null;
 let limiter = null;
 
-// Track voices simply in arrays
-let activeVoices = [];   // all currently sounding
-let sustaining = false;  // hold state
-let heldVoices = [];     // subset of active that are latched
+// Track voices
+let activeVoices = [];
+let sustaining = false;
+let heldVoices = [];
 
+// MIDI (optional)
 let midiAccess = null;
 
+// Metronome output gain (dedicated, independent of synth master)
+let metroGain = null;
+const METRO_LEVEL = 0.85; // default 85% (0..1.2 OK)
+
+// UI els
 const el = (id) => document.getElementById(id);
 const $root = el("root"), $oct = el("octave"), $mode = el("mode");
 const $wave = el("wave"), $dur = el("dur"), $vol = el("vol");
 const $a = el("a"), $d = el("d"), $s = el("s"), $r = el("r");
 const $status = el("status"), $hold = el("hold");
 
-function updateStatus(msg) {
-  const audio = audioCtx ? `Audio: ${audioCtx.state}` : "Audio: idle";
-  let midi = "MIDI: unavailable";
-  if (midiAccess) {
-    const inputs = [...midiAccess.inputs.values()];
-    midi = inputs.length ? `MIDI: ${inputs.map(i => i.name).join(", ")}` : "MIDI: no inputs";
-  }
-  const hold = `Hold: ${sustaining ? "ON" : "OFF"}`;
-  $status.textContent = msg || `${audio} • ${midi} • Hold: ${sustaining ? "ON" : "OFF"}`;
-}
-
+// ===== Audio bootstrap
 async function ensureAudio() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -49,8 +43,12 @@ async function ensureAudio() {
 
     master.connect(comp).connect(audioCtx.destination);
     limiter = comp;
+
+    // Dedicated metronome gain → straight to destination
+    metroGain = audioCtx.createGain();
+    metroGain.gain.value = METRO_LEVEL;
+    metroGain.connect(audioCtx.destination);
   }
-  // Explicit resume helps Firefox/strict autoplay setups
   if (audioCtx.state !== "running") {
     try { await audioCtx.resume(); } catch {}
   }
@@ -62,21 +60,23 @@ $vol.addEventListener("input", () => {
   master.gain.setTargetAtTime(parseFloat($vol.value), audioCtx.currentTime, 0.01);
 });
 
+// ===== Helpers
 function midiToFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
 function noteNameToMidi(name, octave) { return (octave + 1) * 12 + NOTES.indexOf(name); }
 
 function chordIntervals(mode) {
   switch (mode) {
-    case "maj":  return [0, 4, 7];
-    case "min":  return [0, 3, 7];
-    case "maj7": return [0, 4, 7, 11];
-    case "min7": return [0, 3, 7, 10];
-    case "dim":  return [0, 3, 6];
+    case "maj":  return [0,4,7];
+    case "min":  return [0,3,7];
+    case "maj7": return [0,4,7,11];
+    case "min7": return [0,3,7,10];
+    case "dim":  return [0,3,6];
     default:     return [0];
   }
 }
 
-function startVoice(midi, {wave, a, d, s, r, dur}, sustain=false) {
+// ===== Voice
+function startVoice(midi, {wave,a,d,s,r,dur}, sustain=false) {
   const now = audioCtx.currentTime;
 
   const osc = audioCtx.createOscillator();
@@ -91,7 +91,6 @@ function startVoice(midi, {wave, a, d, s, r, dur}, sustain=false) {
   osc.connect(g).connect(master);
   osc.start(now);
 
-  let stopTimer = null;
   if (!sustain) {
     const offT = now + dur;
     g.gain.setValueAtTime(s, offT);
@@ -104,7 +103,6 @@ function startVoice(midi, {wave, a, d, s, r, dur}, sustain=false) {
   if (sustain) heldVoices.push(voice);
 
   osc.addEventListener("ended", () => {
-    // prune from both arrays
     activeVoices = activeVoices.filter(v => v !== voice);
     heldVoices = heldVoices.filter(v => v !== voice);
   });
@@ -112,27 +110,43 @@ function startVoice(midi, {wave, a, d, s, r, dur}, sustain=false) {
   return voice;
 }
 
-function releaseVoice(voice) {
-  if (!audioCtx || !voice || voice.released) return;
+function releaseVoice(v) {
+  if (!audioCtx || !v || v.released) return;
   const now = audioCtx.currentTime;
   try {
-    voice.g.gain.cancelScheduledValues(now);
-    const current = voice.g.gain.value; // fine for a simple ramp
-    voice.g.gain.setValueAtTime(current, now);
-    voice.g.gain.linearRampToValueAtTime(0, now + voice.r);
-    try { voice.osc.stop(now + voice.r + 0.02); } catch {}
+    v.g.gain.cancelScheduledValues(now);
+    const cur = v.g.gain.value;
+    v.g.gain.setValueAtTime(cur, now);
+    v.g.gain.linearRampToValueAtTime(0, now + v.r);
+    try { v.osc.stop(now + v.r + 0.02); } catch {}
   } catch {}
-  voice.released = true;
+  v.released = true;
 }
 
 function releaseHeld() {
-  // copy to avoid mutation issues during iteration
-  const toRelease = heldVoices.slice();
+  const list = heldVoices.slice();
   heldVoices.length = 0;
-  toRelease.forEach(releaseVoice);
+  list.forEach(releaseVoice);
 }
 
-function playSelection() {
+function stopAll() {
+  releaseHeld();
+  const now = audioCtx ? audioCtx.currentTime : 0;
+  activeVoices.forEach(v => {
+    try {
+      v.g.gain.cancelScheduledValues(now);
+      const cur = v.g.gain.value;
+      v.g.gain.setValueAtTime(cur, now);
+      v.g.gain.linearRampToValueAtTime(0, now + 0.03);
+      try { v.osc.stop(now + 0.05); } catch {}
+    } catch {}
+    v.released = true;
+  });
+  activeVoices.length = 0;
+}
+
+// ===== Play selection
+function playRootSelection() {
   const base = noteNameToMidi($root.value, parseInt($oct.value, 10));
   const ints = chordIntervals($mode.value);
   const count = ints.length;
@@ -157,36 +171,7 @@ function playSelection() {
   }
 }
 
-function stopAll() {
-  releaseHeld();
-  const now = audioCtx ? audioCtx.currentTime : 0;
-  activeVoices.forEach(v => {
-    try {
-      v.g.gain.cancelScheduledValues(now);
-      const cur = v.g.gain.value;
-      v.g.gain.setValueAtTime(cur, now);
-      v.g.gain.linearRampToValueAtTime(0, now + 0.03);
-      try { v.osc.stop(now + 0.05); } catch {}
-    } catch {}
-    v.released = true;
-  });
-  activeVoices.length = 0;
-}
-
-async function handlePlay() {
-  await ensureAudio();
-  playSelection();
-}
-
-function toggleHold() {
-  sustaining = !sustaining;
-  $hold.classList.toggle("active", sustaining);
-  $hold.textContent = sustaining ? "Release" : "Hold";
-  if (!sustaining) releaseHeld(); // immediately release any latched voices
-  updateStatus();
-}
-
-// === MIDI (optional) ===
+// ===== MIDI input (optional)
 async function initMIDI() {
   updateStatus("Audio: idle • MIDI: requesting… • Hold: OFF");
   try {
@@ -224,12 +209,17 @@ function onMIDIMessage(e) {
   }
 }
 
-// === UI wiring ===
-el("play").addEventListener("click", handlePlay);
+// ===== UI wiring
+el("play").addEventListener("click", async () => { await ensureAudio(); playRootSelection(); });
 el("stop").addEventListener("click", stopAll);
-$hold.addEventListener("click", toggleHold);
+$hold.addEventListener("click", () => {
+  sustaining = !sustaining;
+  $hold.classList.toggle("active", sustaining);
+  $hold.textContent = sustaining ? "Release" : "Hold";
+  if (!sustaining) releaseHeld();
+  updateStatus();
+});
 
-// ensure clicks resume context (esp. Firefox)
 ["click","pointerdown","keydown","touchstart"].forEach(evt => {
   window.addEventListener(evt, async () => {
     if (audioCtx && audioCtx.state !== "running") {
@@ -239,7 +229,6 @@ $hold.addEventListener("click", toggleHold);
   });
 });
 
-// Computer-key keyboard
 window.addEventListener("keydown", async (e) => {
   if (e.repeat) return;
   const semis = KEYMAP[e.key.toLowerCase()];
@@ -267,28 +256,35 @@ window.addEventListener("keydown", async (e) => {
 if ("requestMIDIAccess" in navigator) initMIDI();
 else updateStatus();
 
-/* ===== Simple Metronome (120 BPM default) ===== */
-
-let metroTimer = null;
-let metroBpm = 120;
-let metroBeat = 0; // counts 0..3 for 4/4
-let metroRunning = false;
-
-// UI elements
-const $bpm = document.getElementById("bpm");
-const $bpmVal = document.getElementById("bpmVal");
-const $metroMode = document.getElementById("metroMode");
-const $metroStart = document.getElementById("metroStart");
-const $metroStop = document.getElementById("metroStop");
-
-// Reflect initial BPM on load
-if ($bpm && $bpmVal) $bpmVal.textContent = `${$bpm.value} BPM`;
-
-function metroIntervalMs() {
-  return (60_000 / metroBpm);
+// ===== Status
+function updateStatus(msg) {
+  const audio = audioCtx ? `Audio: ${audioCtx.state}` : "Audio: idle";
+  let midi = "MIDI: unavailable";
+  if (midiAccess) {
+    const inputs = [...midiAccess.inputs.values()];
+    midi = inputs.length ? `MIDI: ${inputs.map(i => i.name).join(", ")}` : "MIDI: no inputs";
+  }
+  const hold = `Hold: ${sustaining ? "ON" : "OFF"}`;
+  $status.textContent = msg || `${audio} • ${midi} • ${hold}`;
 }
 
-// Make a short click using Web Audio
+/* ===================== Metronome ===================== */
+let metroTimer = null;
+let metroBpm = 120;
+let metroBeat = 0; // 0..3 for 4/4
+let metroRunning = false;
+
+const $bpm = el("bpm");
+const $bpmVal = el("bpmVal");
+const $metroMode = el("metroMode");
+const $metroStart = el("metroStart");
+const $metroStop = el("metroStop");
+const $metroVol = el("metroVol");
+
+if ($bpm && $bpmVal) $bpmVal.textContent = `${$bpm.value} BPM`;
+function metroIntervalMs() { return (60_000 / metroBpm); }
+
+// Louder/brighter click routed through metroGain
 function clickAudio(accent=false) {
   if (!audioCtx) return;
   const now = audioCtx.currentTime;
@@ -296,89 +292,150 @@ function clickAudio(accent=false) {
   const osc = audioCtx.createOscillator();
   const g = audioCtx.createGain();
 
-  // Higher pitch for accent (beat 1) vs normal ticks
+  // bright square; accent higher
   osc.type = "square";
-  osc.frequency.setValueAtTime(accent ? 2000 : 1200, now);
+  osc.frequency.setValueAtTime(accent ? 3000 : 1800, now);
 
-  // Very short envelope
+  // punchy envelope
+  const peak = accent ? 1.0 : 0.8;
   g.gain.setValueAtTime(0, now);
-  g.gain.linearRampToValueAtTime(0.9, now + 0.002);
-  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+  g.gain.linearRampToValueAtTime(peak, now + 0.0015);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
 
-  osc.connect(g).connect(master || audioCtx.destination);
+  // dedicated metronome volume
+  osc.connect(g).connect(metroGain || audioCtx.destination);
   osc.start(now);
-  osc.stop(now + 0.05);
+  osc.stop(now + 0.08);
 }
 
-// Optional: send a short MIDI side-stick tick (note 37 on ch.10) if any output exists
+// Optional MIDI tick (if any output is available)
 function clickMIDI(accent=false) {
   try {
-    if (!window.midiAccess) return;
+    if (!midiAccess) return;
     const outs = [...midiAccess.outputs.values()];
     if (!outs.length) return;
     const out = outs[0];
     const velocity = accent ? 110 : 90;
-    // ch.10 = 9 (0-based), NoteOn = 0x90 | channel
-    out.send([0x99, 37, velocity]); // note on
-    // note off shortly after
-    setTimeout(() => { out.send([0x89, 37, 0]); }, 30);
+    out.send([0x99, 37, velocity]);                 // ch 10 note on (37 side-stick)
+    setTimeout(() => out.send([0x89, 37, 0]), 30);  // note off
   } catch {}
 }
 
-// Combined tick: audio + (optional) MIDI
 function tick() {
   const mode = $metroMode ? $metroMode.value : "all";
   const beatIndex = metroBeat % 4;
 
   const isBackbeatWanted = (mode === "backbeat");
-  const shouldClick = !isBackbeatWanted || (beatIndex === 1 || beatIndex === 3); // beats 2 & 4
+  const shouldClick = !isBackbeatWanted || (beatIndex === 1 || beatIndex === 3); // 2 & 4
 
   if (shouldClick) {
-    const accent = (beatIndex === 0); // accent beat 1
+    const accent = (beatIndex === 0);
     clickAudio(accent);
     clickMIDI(accent);
   }
+
+  onBeatForCycle(); // circle-of-fourths driver
 
   metroBeat = (metroBeat + 1) % 4;
 }
 
 function startMetronome() {
   if (metroRunning) return;
-  // ensure audio context is running
   if (typeof ensureAudio === "function") ensureAudio();
   metroRunning = true;
   metroBeat = 0;
-  tick(); // fire immediately
+  tick(); // immediate tick
   metroTimer = setInterval(tick, metroIntervalMs());
-  updateStatus && updateStatus();
+  updateStatus();
 }
 
 function stopMetronome() {
   if (metroTimer) clearInterval(metroTimer);
   metroTimer = null;
   metroRunning = false;
-  updateStatus && updateStatus();
+  updateStatus();
 }
 
-// Hook up UI
+// UI hooks
 if ($bpm) {
   $bpm.addEventListener("input", () => {
     metroBpm = parseInt($bpm.value, 10) || 120;
     if ($bpmVal) $bpmVal.textContent = `${metroBpm} BPM`;
     if (metroRunning) {
-      // Restart interval to apply new BPM
       clearInterval(metroTimer);
       metroTimer = setInterval(tick, metroIntervalMs());
     }
   });
 }
 if ($metroStart) $metroStart.addEventListener("click", startMetronome);
-if ($metroStop) $metroStop.addEventListener("click", stopMetronome);
+if ($metroStop)  $metroStop.addEventListener("click", stopMetronome);
 
-// Optional: spacebar toggles metronome
+// Metronome volume slider
+if ($metroVol) {
+  $metroVol.addEventListener("input", () => {
+    if (!audioCtx || !metroGain) return;
+    metroGain.gain.setTargetAtTime(parseFloat($metroVol.value) / 100, audioCtx.currentTime, 0.01);
+  });
+}
+
 window.addEventListener("keydown", (e) => {
   if (e.code === "Space" && !e.repeat) {
     e.preventDefault();
     metroRunning ? stopMetronome() : startMetronome();
   }
 });
+
+/* ============ Circle of Fourths auto-advance ============ */
+const CYCLE4 = ["C","F","A#","D#","G#","C#","F#","B","E","A","D","G"];
+
+let cycleEnabled = false;
+let cycleStepBeats = 8;
+let cycleIndex = 0;
+let cycleBeatCounter = 0;
+
+const $cycle4ths  = el("cycle4ths");
+const $cycleBeats = el("cycleBeats");
+const $rootSelect = el("root");
+
+function syncCycleIndexToCurrentRoot() {
+  const current = $rootSelect?.value || "C";
+  const i = CYCLE4.indexOf(current);
+  cycleIndex = (i >= 0 ? i : 0);
+}
+
+function advanceRootOnceAndReplay() {
+  cycleIndex = (cycleIndex + 1) % CYCLE4.length;
+  const nextRoot = CYCLE4[cycleIndex];
+  if ($rootSelect) $rootSelect.value = nextRoot;
+
+  if (typeof stopAll === "function") stopAll();
+  if (typeof playRootSelection === "function") playRootSelection();
+}
+
+function onBeatForCycle() {
+  if (!cycleEnabled) return;
+  if (!metroRunning) return;
+
+  cycleBeatCounter++;
+  if (cycleBeatCounter >= cycleStepBeats) {
+    cycleBeatCounter = 0;
+    advanceRootOnceAndReplay();
+  }
+}
+
+if ($cycle4ths) {
+  $cycle4ths.addEventListener("change", () => {
+    cycleEnabled = $cycle4ths.checked;
+    cycleBeatCounter = 0;
+    syncCycleIndexToCurrentRoot();
+  });
+}
+if ($cycleBeats) {
+  $cycleBeats.addEventListener("change", () => {
+    cycleStepBeats = parseInt($cycleBeats.value, 10) || 8;
+    cycleBeatCounter = 0;
+  });
+}
+if ($cycleBeats) cycleStepBeats = parseInt($cycleBeats.value, 10) || 8;
+
+// ===== end
