@@ -59,6 +59,15 @@ button:active { transform: scale(0.99); }
 }
 #hold.active:hover { background: var(--ok-hi); }
 
+/* === Better alignment for labels in .row === */
+.row > label {
+  justify-self: end;     /* push labels to the right edge of their grid cell */
+  text-align: right;     /* align label text to the right */
+  padding-right: 4px;    /* tiny breathing space between label and control */
+}
+
+
 details summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
 .hint { color: var(--muted); font-size: 0.92rem; margin: 6px 0 0; }
 #status { margin: 0; }
+
