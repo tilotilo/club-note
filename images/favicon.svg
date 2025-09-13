@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #000;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        fill: #ff7bac;
+      }
+    </style>
+  </defs>
+  <g id="bg_key_color" data-name="bg key color">
+    <rect class="cls-3" width="128" height="126"/>
+  </g>
+  <g id="outline">
+    <g>
+      <rect class="cls-2" x=".5" y=".5" width="1" height="127"/>
+      <path class="cls-1" d="M1,1v126V1M2,0H0v128h2V0h0Z"/>
+    </g>
+    <g>
+      <rect class="cls-2" x="126.5" y=".5" width="1" height="127"/>
+      <path class="cls-1" d="M127,1v126V1M128,0h-2v128h2V0h0Z"/>
+    </g>
+    <g>
+      <rect class="cls-2" x=".5" y="126.5" width="127" height="1"/>
+      <polygon class="cls-1" points="128 126 0 126 0 128 128 128 128 126 128 126"/>
+    </g>
+    <g>
+      <rect class="cls-2" x=".5" y=".5" width="126" height="1"/>
+      <polygon class="cls-1" points="127 0 0 0 0 2 127 2 127 0 127 0"/>
+    </g>
+  </g>
+  <g id="key_outlines" data-name="key outlines">
+    <g>
+      <rect class="cls-2" x="65.5" y="1.5" width="1" height="125"/>
+      <path class="cls-1" d="M66,2v124V2M67,1h-2v126h2V1h0Z"/>
+    </g>
+    <g>
+      <rect class="cls-2" x="98.5" y="2.5" width="1" height="123"/>
+      <path class="cls-1" d="M99,3v122V3M100,2h-2v124h2V2h0Z"/>
+    </g>
+    <g>
+      <rect class="cls-2" x="33.5" y="2.5" width="1" height="124"/>
+      <path class="cls-1" d="M34,3v123V3M35,2h-2v125h2V2h0Z"/>
+    </g>
+  </g>
+  <g id="Layer_3" data-name="Layer 3">
+    <rect class="cls-1" x="23" y="1" width="21" height="71"/>
+    <rect class="cls-1" x="54" y="1" width="21" height="71"/>
+    <rect class="cls-1" x="88" y="1" width="21" height="71"/>
+  </g>
+</svg>
