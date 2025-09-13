@@ -266,3 +266,119 @@ window.addEventListener("keydown", async (e) => {
 // Kick MIDI init if supported
 if ("requestMIDIAccess" in navigator) initMIDI();
 else updateStatus();
+
+/* ===== Simple Metronome (120 BPM default) ===== */
+
+let metroTimer = null;
+let metroBpm = 120;
+let metroBeat = 0; // counts 0..3 for 4/4
+let metroRunning = false;
+
+// UI elements
+const $bpm = document.getElementById("bpm");
+const $bpmVal = document.getElementById("bpmVal");
+const $metroMode = document.getElementById("metroMode");
+const $metroStart = document.getElementById("metroStart");
+const $metroStop = document.getElementById("metroStop");
+
+// Reflect initial BPM on load
+if ($bpm && $bpmVal) $bpmVal.textContent = `${$bpm.value} BPM`;
+
+function metroIntervalMs() {
+  return (60_000 / metroBpm);
+}
+
+// Make a short click using Web Audio
+function clickAudio(accent=false) {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+
+  // Higher pitch for accent (beat 1) vs normal ticks
+  osc.type = "square";
+  osc.frequency.setValueAtTime(accent ? 2000 : 1200, now);
+
+  // Very short envelope
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.9, now + 0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+
+  osc.connect(g).connect(master || audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.05);
+}
+
+// Optional: send a short MIDI side-stick tick (note 37 on ch.10) if any output exists
+function clickMIDI(accent=false) {
+  try {
+    if (!window.midiAccess) return;
+    const outs = [...midiAccess.outputs.values()];
+    if (!outs.length) return;
+    const out = outs[0];
+    const velocity = accent ? 110 : 90;
+    // ch.10 = 9 (0-based), NoteOn = 0x90 | channel
+    out.send([0x99, 37, velocity]); // note on
+    // note off shortly after
+    setTimeout(() => { out.send([0x89, 37, 0]); }, 30);
+  } catch {}
+}
+
+// Combined tick: audio + (optional) MIDI
+function tick() {
+  const mode = $metroMode ? $metroMode.value : "all";
+  const beatIndex = metroBeat % 4;
+
+  const isBackbeatWanted = (mode === "backbeat");
+  const shouldClick = !isBackbeatWanted || (beatIndex === 1 || beatIndex === 3); // beats 2 & 4
+
+  if (shouldClick) {
+    const accent = (beatIndex === 0); // accent beat 1
+    clickAudio(accent);
+    clickMIDI(accent);
+  }
+
+  metroBeat = (metroBeat + 1) % 4;
+}
+
+function startMetronome() {
+  if (metroRunning) return;
+  // ensure audio context is running
+  if (typeof ensureAudio === "function") ensureAudio();
+  metroRunning = true;
+  metroBeat = 0;
+  tick(); // fire immediately
+  metroTimer = setInterval(tick, metroIntervalMs());
+  updateStatus && updateStatus();
+}
+
+function stopMetronome() {
+  if (metroTimer) clearInterval(metroTimer);
+  metroTimer = null;
+  metroRunning = false;
+  updateStatus && updateStatus();
+}
+
+// Hook up UI
+if ($bpm) {
+  $bpm.addEventListener("input", () => {
+    metroBpm = parseInt($bpm.value, 10) || 120;
+    if ($bpmVal) $bpmVal.textContent = `${metroBpm} BPM`;
+    if (metroRunning) {
+      // Restart interval to apply new BPM
+      clearInterval(metroTimer);
+      metroTimer = setInterval(tick, metroIntervalMs());
+    }
+  });
+}
+if ($metroStart) $metroStart.addEventListener("click", startMetronome);
+if ($metroStop) $metroStop.addEventListener("click", stopMetronome);
+
+// Optional: spacebar toggles metronome
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !e.repeat) {
+    e.preventDefault();
+    metroRunning ? stopMetronome() : startMetronome();
+  }
+});
