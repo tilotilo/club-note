@@ -10,29 +10,11 @@
   --ok-hi: #2e8a4b;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
-}
+* { box-sizing: border-box; font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
 
-html, body {
-  margin: 0;
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.wrap {
-  max-width: 920px;
-  margin: 32px auto;
-  padding: 0 16px;
-}
-
-h1 {
-  font-weight: 800;
-  letter-spacing: .3px;
-  margin: 0 0 16px;
-}
+.wrap { max-width: 920px; margin: 32px auto; padding: 0 16px; }
+h1 { font-weight: 800; letter-spacing: .3px; margin: 0 0 16px; }
 
 .panel {
   background: var(--panel);
@@ -49,76 +31,36 @@ h1 {
   align-items: center;
   margin: 10px 0;
 }
+.row > label { grid-column: span 2; color: var(--muted); font-size: 0.95rem; }
+.row > select, .row > input[type="number"], .row > input[type="range"] { grid-column: span 2; }
+.row.buttons { display: flex; gap: 10px; }
 
-.row > label {
-  grid-column: span 2;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-.row > select,
-.row > input[type="number"],
-.row > input[type="range"] {
-  grid-column: span 2;
-}
-
-.row.buttons {
-  display: flex;
-  gap: 10px;
-}
-
-input,
-select,
-button {
+input, select, button {
   background: #0e1030;
   color: var(--text);
   border: 1px solid #2b2f57;
   border-radius: 10px;
   padding: 8px 10px;
 }
-
-input[type="range"] {
-  padding: 0;
-}
+input[type="range"] { padding: 0; }
 
 button {
   background: var(--btn);
   cursor: pointer;
   transition: background .2s ease, transform .02s ease;
 }
-
-button:hover {
-  background: var(--btn-hi);
-}
-
-button:active {
-  transform: scale(0.99);
-}
+button:hover { background: var(--btn-hi); }
+button:active { transform: scale(0.99); }
 
 #hold.active {
   background: var(--ok);
   border-color: #2a5b3a;
 }
+#hold.active:hover { background: var(--ok-hi); }
 
-#hold.active:hover {
-  background: var(--ok-hi);
-}
-
-details summary {
-  cursor: pointer;
-  color: var(--accent);
-  margin-top: 6px;
-}
-
-.hint {
-  color: var(--muted);
-  font-size: 0.92rem;
-  margin: 6px 0 0;
-}
-
-#status {
-  margin: 0;
-}
+details summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
+.hint { color: var(--muted); font-size: 0.92rem; margin: 6px 0 0; }
+#status { margin: 0; }
 
 /* === Better alignment for labels and controls === */
 .row > label {
@@ -127,40 +69,35 @@ details summary {
   padding-right: 4px;     /* small gap between label and input */
 }
 
-.row > label { grid-column: span 1; }
-.row > select,
-.row > input[type="number"],
-.row > input[type="range"] {
-  grid-column: span 1;   /* adjust span if needed, e.g., span 3 for wider boxes */
+/* Duration label a bit wider */
+label[for="dur"] {
+  min-width: 5ch;
+  justify-self: end;
+  text-align: right;
+  padding-right: 6px;
 }
 
-/* === Width tuning for number inputs === */
+/* Width tuning for number inputs */
+#a, #d, #s, #r { width: 4ch; text-align: right; }   /* tight ADSR */
+#dur { width: 6ch; text-align: right; }             /* a little wider */
 
-/* Duration box */
-#dur {
-  width: 14ch;          /* allow a few extra digits, e.g., 10.00 */
-  text-align: center;
-}
+/* Compact layout for ADSR row */
+details .row { gap: 6px; margin: 4px 0; }
+details .row > label { padding-right: 2px; }
 
-/* === ADSR row: keep each label right next to its input === */
+/* ADSR row as tight label+input pairs */
 .row.adsr {
-  display: flex;              /* override the default grid for this row only */
-  flex-wrap: wrap;         /* tighter horizontal & vertical spacing */
-  align-items: center;
-  margin: 4px 0;              /* compact vertical space */
+  display: flex; flex-wrap: wrap;
+  gap: 6px 12px; align-items: center; margin: 4px 0;
 }
+.row.adsr > label, .row.adsr > input[type="number"] { grid-column: auto; }
+.row.adsr > label { text-align: right; padding-right: 4px; min-width: 1.5ch; }
 
-/* Make sure old grid column spans don’t interfere (safe no-op in flex, but explicit) */
-.row.adsr > label,
-.row.adsr > input[type="number"] {
-  grid-column: auto;
-  text-align: center;
-  padding-left: 1px;         /* tiny space before the number box */
-  padding-right: 1px;
-  min-width: 1.5ch;           /* keeps single letters aligned */
-}
+/* Metronome tweaks */
+#bpm { width: 20rem; }
+/* lighter background for BPM slider (subtle) */
+.row input#bpm { background-color: color-mix(in srgb, var(--panel) 80%, white); }
+#bpmVal { color: var(--muted); min-width: 7ch; text-align: right; }
 
-/* Tight number boxes for ADSR */
-#a, #d, #s, #r {
-  width: 12ch;
-}
+/* Circle-of-4ths row spacing (optional) */
+.row:has(#cycle4ths) { margin-top: 6px; }
