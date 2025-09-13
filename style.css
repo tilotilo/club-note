@@ -59,6 +59,10 @@ button:active { transform: scale(0.99); }
 }
 #hold.active:hover { background: var(--ok-hi); }
 
+details summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
+.hint { color: var(--muted); font-size: 0.92rem; margin: 6px 0 0; }
+#status { margin: 0; }
+
 /* === Better alignment for labels in .row === */
 .row > label {
   justify-self: end;     /* push labels to the right edge of their grid cell */
@@ -66,8 +70,9 @@ button:active { transform: scale(0.99); }
   padding-right: 4px;    /* tiny breathing space between label and control */
 }
 
-
-details summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
-.hint { color: var(--muted); font-size: 0.92rem; margin: 6px 0 0; }
-#status { margin: 0; }
-
+.row > label { grid-column: span 1; }
+.row > select,
+.row > input[type="number"],
+.row > input[type="range"] {
+  grid-column: span 1;   /* adjust span if needed, e.g., span 3 for wider boxes */
+}
