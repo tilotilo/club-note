@@ -13,6 +13,14 @@
     <h3>Club Note <img src="./images/ghoul_1.gif" alt="ghoulish gif" /></h3>
 
     <section class="panel">
+      
+            <div class="row buttons">
+              <button id="play">Play</button>
+              <button id="hold">Hold</button>
+              <button id="stop">Stop All</button>
+            </div>
+                  <p class="hint">[A W S E D F T G Y H U J]</p>
+                  <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
       <div class="row">
         <label for="root">Root</label>
         <select id="root">
@@ -62,15 +70,8 @@
           <label for="r">R</label><input id="r" type="number" min="0" step="0.01" value="0.2" />
         </div>
       </details>
-
-      <div class="row buttons">
-        <button id="play">Play</button>
-        <button id="hold">Hold</button>
-        <button id="stop">Stop All</button>
-      </div>
-
-      <!-- Metronome controls -->
-      <hr />
+            <hr />
+            <!-- Metronome controls -->
       <div class="row">
         <label for="bpm">Metronome</label>
         <input id="bpm" type="range" min="30" max="240" step="1" value="120" />
@@ -100,9 +101,6 @@
           <option value="16" selected>4 bars</option>
         </select>
       </div>
-
-      <p class="hint">[A W S E D F T G Y H U J]</p>
-      <p class="hint">Hold toggles infinite sustain. While ON, any new notes/chords keep sounding until you click Hold again or Stop.</p>
     </section>
 
     <section class="panel">
