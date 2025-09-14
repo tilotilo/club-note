@@ -78,8 +78,8 @@ label[for="dur"] {
 }
 
 /* Width tuning for number inputs */
-#a, #d, #s, #r { width: 4ch; text-align: right; }   /* tight ADSR */
-#dur { width: 6ch; text-align: right; }             /* a little wider */
+#a, #d, #s, #r { width: 12ch; text-align: center; }   /* tight ADSR */
+#dur { width: 12ch; text-align: center; }             /* a little wider */
 
 /* Compact layout for ADSR row */
 details .row { gap: 6px; margin: 4px 0; }
@@ -101,3 +101,31 @@ details .row > label { padding-right: 2px; }
 
 /* Circle-of-4ths row spacing (optional) */
 .row:has(#cycle4ths) { margin-top: 6px; }
+
+/* --- Compact "Root / Octave / Mode / Wave" row --- */
+.row:has(#root, #octave, #mode, #wave) {
+  display: flex;            /* override the grid for this row only */
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+/* Tight label + control pairs, float left naturally */
+.row:has(#root) > label {
+  margin-right: 4px;
+  white-space: nowrap;
+  /* grid-specific alignment no longer applies in flex, so no justify-self */
+}
+
+/* Make selects fit their option text instead of the grid width */
+.row:has(#root) select {
+  width: auto;              /* shrink to content */
+  inline-size: fit-content; /* modern content-based sizing */
+  min-width: 0;             /* allow narrowing */
+  padding-right: 24px;      /* room for the dropdown chevron */
+}
+
+/* Optional: keep the whole block from stretching super wide on big screens */
+@media (min-width: 920px) {
+  .row:has(#root) { max-width: 100%; }
+}
