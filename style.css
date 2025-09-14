@@ -129,3 +129,10 @@ details .row > label { padding-right: 2px; }
 @media (min-width: 920px) {
   .row:has(#root) { max-width: 100%; }
 }
+
+/* Subtle desaturation for the Cycle-of-4ths row */
+.row:has(#cycle4ths) {
+  background-color: color-mix(in srgb, var(--panel) 90%, white 10%);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
