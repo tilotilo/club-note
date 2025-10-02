@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 210 66">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 24px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        isolation: isolate;
+      }
+
+      .cls-1, .cls-3 {
+        font-family: ArialMT, Arial;
+      }
+
+      .cls-1, .cls-4 {
+        fill: #111;
+      }
+
+      .cls-5 {
+        display: none;
+        fill: #f7f7f7;
+        stroke-width: 0px;
+      }
+
+      .cls-3 {
+        font-size: 23px;
+      }
+
+      .cls-3, .cls-6 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        stroke-width: .8px;
+      }
+
+      .cls-4, .cls-7 {
+        stroke: #000;
+      }
+
+      .cls-6 {
+        stroke: #222;
+      }
+
+      .cls-7 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <rect class="cls-5" x="0" y="-23.8" width="336" height="90"/>
+  <g id="C">
+    <rect class="cls-6" x="0" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(5.9 58.2)"><tspan x="0" y="0">A</tspan></text>
+    </g>
+  </g>
+  <g id="D">
+    <rect class="cls-6" x="29.9" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(37.9 58.2)"><tspan x="0" y="0">S</tspan></text>
+    </g>
+  </g>
+  <g id="E">
+    <rect class="cls-6" x="59.9" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(67.9 59.2)"><tspan x="0" y="0">D</tspan></text>
+    </g>
+  </g>
+  <g id="F">
+    <rect class="cls-6" x="90" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(98.9 59.2)"><tspan x="0" y="0">F</tspan></text>
+    </g>
+  </g>
+  <g id="G">
+    <rect class="cls-6" x="120" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(126.9 59.2)"><tspan x="0" y="0">G</tspan></text>
+    </g>
+  </g>
+  <g id="A">
+    <rect class="cls-6" x="150.1" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(156.9 59.2)"><tspan x="0" y="0">H</tspan></text>
+    </g>
+  </g>
+  <g id="B">
+    <rect class="cls-6" x="180.1" y=".2" width="30" height="66"/>
+    <g class="cls-2">
+      <text class="cls-1" transform="translate(188.9 60.2)"><tspan x="0" y="0">J</tspan></text>
+    </g>
+  </g>
+  <g id="C_" data-name="C ">
+    <path class="cls-4" d="M18.7-.6h22.2c1,0,1.8.6,1.8,1.3v34c0,.7-.8,1.3-1.8,1.3h-22.2c-1,0-1.8-.6-1.8-1.3V.8c0-.7.8-1.3,1.8-1.3Z"/>
+    <g class="cls-2">
+      <text class="cls-3" transform="translate(18.8 24.8)"><tspan x="0" y="0">W</tspan></text>
+    </g>
+  </g>
+  <g id="D_" data-name="D ">
+    <path class="cls-4" d="M49.7-.6h21.1c1,0,1.8.6,1.8,1.3v34c0,.7-.8,1.3-1.8,1.3h-21.1c-1,0-1.8-.6-1.8-1.3V.8c0-.7.8-1.3,1.8-1.3Z"/>
+    <g class="cls-2">
+      <text class="cls-3" transform="translate(52.9 24.8) scale(.9 1)"><tspan x="0" y="0">E</tspan></text>
+    </g>
+  </g>
+  <g id="F_" data-name="F ">
+    <path class="cls-4" d="M109.6-.6h20.6c.9,0,1.7.6,1.7,1.3v34c0,.7-.8,1.3-1.7,1.3h-20.6c-.9,0-1.7-.6-1.7-1.3V.8c0-.7.8-1.3,1.7-1.3Z"/>
+    <g class="cls-2">
+      <text class="cls-3" transform="translate(114.3 24.8) scale(.9 1)"><tspan x="0" y="0">T</tspan></text>
+    </g>
+  </g>
+  <g id="G_" data-name="G ">
+    <path class="cls-4" d="M138.8-.6h22.2c1,0,1.8.6,1.8,1.3v34c0,.7-.8,1.3-1.8,1.3h-22.2c-1,0-1.8-.6-1.8-1.3V.8c0-.7.8-1.3,1.8-1.3Z"/>
+    <g class="cls-2">
+      <text class="cls-3" transform="translate(143.2 24.8) scale(.9 1)"><tspan x="0" y="0">Y</tspan></text>
+    </g>
+  </g>
+  <g id="A_" data-name="A ">
+    <path class="cls-4" d="M169.1-.6h21.8c1,0,1.8.6,1.8,1.3v34c0,.7-.8,1.3-1.8,1.3h-21.8c-1,0-1.8-.6-1.8-1.3V.8c0-.7.8-1.3,1.8-1.3Z"/>
+    <g class="cls-2">
+      <text class="cls-3" transform="translate(172.6 24.8) scale(.9 1)"><tspan x="0" y="0">U</tspan></text>
+    </g>
+  </g>
+  <line class="cls-7" x1="0" y1="-.2" x2="210.1" y2="-.2"/>
+</svg>
