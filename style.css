@@ -136,3 +136,5 @@ details .row > label { padding-right: 2px; }
   border-radius: 8px;
   padding: 4px 8px;
 }
+/* keyboard graphic */
+.kb-svg { line-height:0; height:2em; width:auto;}
